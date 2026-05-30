@@ -10,7 +10,10 @@ reproducible and testable. Each primitive maps to a course module:
     Sequential  M2  sequential pipeline
     Parallel    M2  parallel fan-out
     Handoff     M3  delegation / control transfer
-    Trace       M9  observability
+    Trace           M9  observability
+    Context         M5  threaded state / bill of materials
+    StatefulPipeline M5  pipeline with shared context bag
+    Guardrail       M6  pre/post safety checks
 
 The same shapes appear in MCP (tools), A2A (handoffs/agent cards),
 LangGraph (graphs) and CrewAI (crews) — the course maps each one across.
@@ -197,3 +200,108 @@ class Parallel:
             results.append(step(value))
         self.trace.emit("gather", count=len(results))
         return results
+
+
+# ── State & context (M5) ─────────────────────────────────────────────────────
+
+@dataclass
+class Context:
+    """Mutable state bag threaded through pipeline stages (M5).
+
+    Think of ``data`` as a lightweight bill of materials: each stage reads and
+    writes keys instead of passing opaque strings only.
+    """
+
+    data: dict[str, Any] = field(default_factory=dict)
+    trace: Optional[Trace] = None
+
+    def set(self, key: str, value: Any) -> "Context":
+        self.data[key] = value
+        return self
+
+    def get(self, key: str, default: Any = None) -> Any:
+        return self.data.get(key, default)
+
+
+ContextStep = Callable[[Context], Context]
+
+
+class StatefulPipeline:
+    """Pipeline where every stage receives the same ``Context`` (M5)."""
+
+    def __init__(self, steps: list[ContextStep], trace: Optional[Trace] = None):
+        self.steps = steps
+        self.trace = trace if trace is not None else Trace()
+
+    def run(self, initial: Optional[dict[str, Any]] = None) -> Context:
+        ctx = Context(data=dict(initial or {}), trace=self.trace)
+        for i, step in enumerate(self.steps):
+            self.trace.emit("context_stage", index=i, keys=sorted(ctx.data.keys()))
+            ctx.trace = self.trace
+            ctx = step(ctx)
+        self.trace.emit("context_done", keys=sorted(ctx.data.keys()))
+        return ctx
+
+
+# ── Guardrails (M6) ──────────────────────────────────────────────────────────
+
+GuardrailFn = Callable[[str, str], Optional[str]]
+
+
+@dataclass
+class Guardrail:
+    """Named pre/post check. Return an error string to block, or ``None`` to pass."""
+
+    name: str
+    check: GuardrailFn
+
+    def run(self, text: str, phase: str) -> Optional[str]:
+        return self.check(text, phase)
+
+
+def injection_guardrail() -> Guardrail:
+    """Block common prompt-injection phrases (deterministic demo guardrail)."""
+
+    needles = (
+        "ignore previous", "ignore all", "system prompt", "jailbreak",
+        "игнорируй предыдущ", "ignora instrucciones",
+    )
+
+    def check(text: str, phase: str) -> Optional[str]:
+        low = text.lower()
+        for n in needles:
+            if n in low:
+                return f"{phase}: injection pattern {n!r}"
+        return None
+
+    return Guardrail("injection_filter", check)
+
+
+def length_guardrail(max_len: int = 500) -> Guardrail:
+    def check(text: str, phase: str) -> Optional[str]:
+        if len(text) > max_len:
+            return f"{phase}: output too long ({len(text)} > {max_len})"
+        return None
+
+    return Guardrail("max_length", check)
+
+
+def guarded_tool(tool: Tool, guardrails: list[Guardrail], trace: Trace) -> Tool:
+    """Wrap a tool with pre/post guardrails (M6)."""
+
+    def fn(task: str) -> Any:
+        for g in guardrails:
+            err = g.run(task, "pre")
+            if err:
+                trace.emit("guardrail_block", guardrail=g.name, phase="pre", reason=err, tool=tool.name)
+                return f"[blocked:{g.name}] {err}"
+        trace.emit("tool_call", agent="guarded", tool=tool.name, task=task)
+        result = tool(task)
+        for g in guardrails:
+            err = g.run(str(result), "post")
+            if err:
+                trace.emit("guardrail_block", guardrail=g.name, phase="post", reason=err, tool=tool.name)
+                return f"[blocked:{g.name}] {err}"
+        return result
+
+    return Tool(tool.name, fn, tool.description)

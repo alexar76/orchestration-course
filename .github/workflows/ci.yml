@@ -31,9 +31,9 @@ jobs:
           git clone --depth 1 https://github.com/alexar76/aimarket-agent.git _deps/aimarket-agent
           python3 scripts/patch_aimarket_hub.py _deps/aimarket-hub
           pip install -e _deps/aimarket-agent -e _deps/aimarket-hub
-          pip install -e ".[dev]"
+          pip install -e ".[hub-lite,dev]"
 
-      - name: Test (patterns + i18n + embedded economy)
+      - name: Test (patterns + i18n + hub-lite + embedded economy)
         run: pytest -q
 
       - name: Verify course asset build
@@ -42,7 +42,10 @@ jobs:
       - name: Smoke-run labs in all three languages
         run: |
           for L in en ru es; do
-            for lab in lab01_agent_and_tool lab02_topologies lab03_handoff; do
+            for lab in lab01_agent_and_tool lab02_topologies lab03_handoff lab05_state_context lab06_guardrails; do
               COURSE_LANG=$L python labs/$lab.py >/dev/null
             done
           done
+          COURSE_LANG=en python labs/lab04_discover_invoke.py >/dev/null
+          COURSE_LANG=en python labs/lab07_receipt_verify.py >/dev/null
+          python labs/run_exercises.py >/dev/null

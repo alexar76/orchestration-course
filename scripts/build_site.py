@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
+SITE_ASSETS = ROOT / "site_assets"
 I18N_DIR = ROOT / "i18n"
 LABS_DIR = ROOT / "labs"
 
@@ -21,6 +22,9 @@ LABS = [
     {"stem": "lab02_topologies", "module": "m2", "track": "basic"},
     {"stem": "lab03_handoff", "module": "m3", "track": "basic"},
     {"stem": "lab04_discover_invoke", "module": "m4", "track": "economy"},
+    {"stem": "lab05_state_context", "module": "m5", "track": "basic"},
+    {"stem": "lab06_guardrails", "module": "m6", "track": "basic"},
+    {"stem": "lab07_receipt_verify", "module": "m7", "track": "economy"},
     {"stem": "lab08_metered_economy", "module": "m8", "track": "advanced"},
 ]
 
@@ -181,127 +185,43 @@ def _write_assets() -> None:
           padding: 0.12rem 0.35rem;
           border-radius: 6px;
         }
-        """
-    )
-    js = textwrap.dedent(
-        """\
-        (function () {
-          const state = { lang: "en", data: null };
-
-          function t(key) {
-            const cat = state.data.catalogs[state.lang] || state.data.catalogs.en;
-            const parts = key.split(".");
-            let node = cat;
-            for (const p of parts) {
-              if (!node || typeof node !== "object" || !(p in node)) return key;
-              node = node[p];
-            }
-            return typeof node === "string" ? node : key;
-          }
-
-          function labForModule(mod) {
-            return state.data.labs.find((l) => l.module === mod);
-          }
-
-          function renderModules() {
-            const grid = document.getElementById("modules");
-            grid.innerHTML = "";
-            for (const mod of state.data.modules) {
-              const info = (state.data.catalogs[state.lang].modules || {})[mod] || {};
-              const lab = labForModule(mod);
-              const card = document.createElement("article");
-              card.className = "card";
-              const title = info.title || mod;
-              const concept = info.concept || "";
-              const industry = info.industry || "";
-              let pills = `<span class="pill">${mod.toUpperCase()}</span>`;
-              let actions = "";
-              if (lab) {
-                pills += `<span class="pill lab">${t("site.has_lab")}</span>`;
-                if (lab.track === "advanced") pills += `<span class="pill">${t("site.advanced")}</span>`;
-                actions = `
-                  <div class="actions">
-                    <a class="btn primary" href="${lab.colab}" target="_blank" rel="noopener">${t("site.open_colab")}</a>
-                    <a href="https://github.com/${state.data.repo}/blob/main/${lab.script}">${t("site.view_source")}</a>
-                  </div>`;
-              } else {
-                pills += `<span class="pill soon">${t("site.coming_soon")}</span>`;
-              }
-              card.innerHTML = `
-                <h3>${title}</h3>
-                <div class="meta">${industry}</div>
-                <p>${concept}</p>
-                ${pills}
-                ${actions}`;
-              grid.appendChild(card);
-            }
-          }
-
-          function renderLabs() {
-            const list = document.getElementById("labs");
-            list.innerHTML = "";
-            for (const lab of state.data.labs) {
-              const mod = lab.module.toUpperCase();
-              const modInfo = (state.data.catalogs[state.lang].modules || {})[lab.module] || {};
-              const item = document.createElement("article");
-              item.className = "card";
-              item.innerHTML = `
-                <h3>${modInfo.title || lab.stem}</h3>
-                <div class="meta">${t("site.module")} ${mod} · ${lab.track}</div>
-                <pre style="white-space:pre-wrap;margin:0;color:var(--muted);font-size:0.86rem;font-family:inherit;">${lab.docstring.replace(/</g, "&lt;")}</pre>
-                <div class="actions">
-                  <a class="btn primary" href="${lab.colab}" target="_blank" rel="noopener">${t("site.open_colab")}</a>
-                  <a href="https://github.com/${state.data.repo}/blob/main/${lab.script}">${t("site.view_source")}</a>
-                </div>
-                <p style="margin:0.75rem 0 0;color:var(--muted);font-size:0.88rem;">
-                  ${t("site.run_local")}: <code class="inline">python ${lab.script}</code>
-                </p>`;
-              list.appendChild(item);
-            }
-          }
-
-          function renderHero() {
-            const c = state.data.catalogs[state.lang].course || {};
-            document.getElementById("title").textContent = c.title || "AI Agent Orchestration";
-            document.getElementById("tagline").textContent = c.tagline || "";
-            document.getElementById("modules-heading").textContent = t("site.modules_heading");
-            document.getElementById("labs-heading").textContent = t("site.labs_heading");
-            document.getElementById("quickstart-heading").textContent = t("site.quickstart_heading");
-            document.getElementById("quickstart-body").innerHTML = t("site.quickstart_body");
-            document.getElementById("footer-note").textContent = t("site.footer");
-          }
-
-          function setLang(lang) {
-            state.lang = lang;
-            document.querySelectorAll(".lang-switch button").forEach((btn) => {
-              btn.classList.toggle("active", btn.dataset.lang === lang);
-            });
-            renderHero();
-            renderModules();
-            renderLabs();
-          }
-
-          fetch("data/course.json")
-            .then((r) => r.json())
-            .then((data) => {
-              state.data = data;
-              const switcher = document.getElementById("lang-switch");
-              for (const lang of data.languages) {
-                const btn = document.createElement("button");
-                btn.type = "button";
-                btn.dataset.lang = lang;
-                btn.textContent = lang.toUpperCase();
-                btn.addEventListener("click", () => setLang(lang));
-                switcher.appendChild(btn);
-              }
-              setLang("en");
-            });
-        })();
+        .pill.done { color: var(--ok); border-color: rgba(52,211,153,0.45); }
+        .progress-bar {
+          height: 8px; border-radius: 999px; background: var(--surface2);
+          border: 1px solid var(--border); overflow: hidden; margin: 1rem 0 0.5rem;
+        }
+        .progress-fill {
+          height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+          transition: width 0.25s ease;
+        }
+        .progress-label { color: var(--muted); font-size: 0.9rem; margin: 0 0 1rem; }
+        .cert-intro { margin-top: 0; color: var(--muted); }
+        .cert-grid { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 1.25rem; }
+        .cert-grid h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
+        .checklist { display: grid; gap: 0.45rem; }
+        .check-row {
+          display: flex; align-items: flex-start; gap: 0.55rem;
+          font-size: 0.9rem; color: var(--text); cursor: pointer;
+        }
+        .check-row input { margin-top: 0.2rem; accent-color: var(--accent); }
+        .cert-form { display: grid; gap: 0.65rem; max-width: 420px; margin-top: 0.5rem; }
+        .cert-form label { font-size: 0.85rem; color: var(--muted); }
+        .cert-form input {
+          padding: 0.65rem 0.85rem; border-radius: 10px; border: 1px solid var(--border);
+          background: var(--surface2); color: var(--text); font: inherit;
+        }
+        .cert-form input.invalid { border-color: #f87171; }
+        .cert-hint { color: var(--muted); font-size: 0.85rem; margin: 0; }
+        .lab-doc { white-space: pre-wrap; margin: 0; color: var(--muted); font-size: 0.86rem; font-family: inherit; }
+        .run-local { margin: 0.75rem 0 0; color: var(--muted); font-size: 0.88rem; }
+        button.btn { cursor: pointer; font: inherit; }
         """
     )
     (SITE / "assets").mkdir(parents=True, exist_ok=True)
+    for name in ("progress.js", "certificate.js", "app.js"):
+        src = (SITE_ASSETS / name).read_text(encoding="utf-8")
+        (SITE / "assets" / name).write_text(src, encoding="utf-8")
     (SITE / "assets" / "style.css").write_text(css, encoding="utf-8")
-    (SITE / "assets" / "app.js").write_text(js, encoding="utf-8")
 
 
 def _write_index() -> None:
@@ -327,6 +247,7 @@ def _write_index() -> None:
               <p class="tagline" id="tagline"></p>
               <div class="toolbar">
                 <div class="lang-switch" id="lang-switch" aria-label="Language"></div>
+                <a class="btn" id="cert-nav" href="#certificate">Certificate</a>
                 <a class="btn primary" href="https://github.com/alexar76/orchestration-course">GitHub</a>
               </div>
             </header>
@@ -334,6 +255,11 @@ def _write_index() -> None:
             <section>
               <h2 id="quickstart-heading"></h2>
               <div class="card" id="quickstart-body"></div>
+            </section>
+
+            <section id="certificate">
+              <h2 id="certificate-heading"></h2>
+              <div class="card" id="certificate-panel"></div>
             </section>
 
             <section>
@@ -350,6 +276,8 @@ def _write_index() -> None:
               <p id="footer-note"></p>
             </footer>
           </div>
+          <script src="assets/progress.js"></script>
+          <script src="assets/certificate.js"></script>
           <script src="assets/app.js"></script>
         </body>
         </html>

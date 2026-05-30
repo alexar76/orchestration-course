@@ -18,7 +18,10 @@ LABS = [
     {"stem": "lab01_agent_and_tool", "sandbox": False},
     {"stem": "lab02_topologies", "sandbox": False},
     {"stem": "lab03_handoff", "sandbox": False},
-    {"stem": "lab04_discover_invoke", "sandbox": True},
+    {"stem": "lab04_discover_invoke", "sandbox": "hub-lite"},
+    {"stem": "lab05_state_context", "sandbox": False},
+    {"stem": "lab06_guardrails", "sandbox": False},
+    {"stem": "lab07_receipt_verify", "sandbox": "hub-lite"},
     {"stem": "lab08_metered_economy", "sandbox": True},
 ]
 
@@ -59,11 +62,20 @@ def _extract_body(stem: str) -> tuple[str, str]:
     return doc, body
 
 
-def _setup_cell(sandbox: bool) -> str:
-    extra = "[sandbox]" if sandbox else ""
+def _setup_cell(sandbox: bool | str) -> str:
+    if sandbox is True:
+        extra = "[sandbox]"
+        note = "# Full SDK (~50 MB) — run once per Colab session"
+    elif sandbox == "hub-lite":
+        extra = "[hub-lite]"
+        note = "# Hub-lite (~5 MB) — fast install for M4/M7"
+    else:
+        extra = ""
+        note = "# Core course only — no network hub deps"
     return textwrap.dedent(
         f"""\
         # Setup — run this cell once per session
+        {note}
         import os
         import subprocess
         import sys
@@ -72,7 +84,7 @@ def _setup_cell(sandbox: bool) -> str:
         DEST = "/content/orchestration-course"
 
         if not os.path.isdir(DEST):
-            subprocess.run(["git", "clone", "-q", REPO, DEST], check=True)
+            subprocess.run(["git", "clone", "-q", "--depth", "1", REPO, DEST], check=True)
         os.chdir(DEST)
 
         subprocess.run(

@@ -1,10 +1,11 @@
 """Lab 08 - The economics of orchestration (Module 8, advanced track).
 
-A full autonomous cycle through the real SDK: discover -> open payment channel
--> invoke (safety-gated) -> escrow debit -> signed receipt -> settle. You get a
-bill-of-materials, just like a production agent paying for capabilities.
+Full autonomous cycle via the real aimarket-agent SDK: discover → channel →
+invoke → escrow → receipt → settle. Heavier deps than hub-lite labs — install
+once per Colab session and reuse for lab04/07 if already installed.
 
 Run:  python labs/lab08_metered_economy.py   (COURSE_LANG=ru|es to localize)
+Needs: pip install -e ".[sandbox]"   (~50 MB, git clones — run once)
 """
 
 import pathlib

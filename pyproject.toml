@@ -19,6 +19,11 @@ Repository = "https://github.com/alexar76/orchestration-course"
 Issues = "https://github.com/alexar76/orchestration-course/issues"
 
 [project.optional-dependencies]
+hub-lite = [
+    "uvicorn>=0.34",
+    "httpx>=0.28",
+    "fastapi>=0.115",
+]
 sandbox = [
     "uvicorn>=0.34",
     "httpx>=0.28",
@@ -26,7 +31,7 @@ sandbox = [
     "aimarket-hub @ git+https://github.com/alexar76/aimarket-hub.git",
 ]
 dev = ["pytest>=8"]
-all = ["orchestration-course[sandbox,dev]"]
+all = ["orchestration-course[hub-lite,sandbox,dev]"]
 
 [tool.setuptools.packages.find]
 include = ["courselib*"]
