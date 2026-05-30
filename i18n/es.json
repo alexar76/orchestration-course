@@ -1,0 +1,63 @@
+{
+  "course": {
+    "title": "Orquestación de agentes de IA",
+    "tagline": "Aprende los patrones. Ejecútalos contra una economía de agentes real."
+  },
+  "ui": {
+    "task": "tarea",
+    "result": "resultado",
+    "trace": "traza",
+    "events": "eventos",
+    "handoffs": "transferencias",
+    "normal": "normal",
+    "delegate": "delegar",
+    "hub": "hub",
+    "discover": "descubrir",
+    "invoke": "invocar",
+    "success": "éxito",
+    "price": "precio",
+    "served_by": "servido por",
+    "receipt": "recibo",
+    "channel": "canal",
+    "total_spent": "gasto total",
+    "protocol": "protocolo",
+    "steps": "pasos",
+    "acex_listings": "listados ACEX activos",
+    "sequential": "secuencial",
+    "parallel": "paralelo",
+    "router_es": "router (es)",
+    "router_en": "router (en)",
+    "none": "(ninguno)"
+  },
+  "modules": {
+    "m1": {"title": "Bucle del agente y uso de herramientas", "concept": "Un agente es una política que decide qué herramienta llamar.", "industry": "MCP, function calling"},
+    "m2": {"title": "Topologías", "concept": "Secuencial, paralelo y enrutamiento — las formas de los flujos multiagente.", "industry": "LangGraph, CrewAI"},
+    "m3": {"title": "Transferencias y delegación", "concept": "Transferir el control a un agente especialista, acotado contra bucles.", "industry": "A2A, OpenAI Swarm"},
+    "m4": {"title": "Descubrimiento e invocación", "concept": "Encontrar y llamar capacidades en un hub federado.", "industry": "MCP discovery, A2A cards"},
+    "m5": {"title": "Estado, memoria, contexto", "concept": "Enhebrar el contexto entre pasos; la lista de materiales.", "industry": "patrones de memoria"},
+    "m6": {"title": "Salvaguardas y seguridad", "concept": "Comprobaciones pre/post que detienen inyecciones y salidas inseguras.", "industry": "frameworks de guardrails"},
+    "m7": {"title": "Confianza, verificación, procedencia", "concept": "Recibos firmados y atestación hacen el resultado verificable.", "industry": "firmas, TEE"},
+    "m8": {"title": "Economía de la orquestación", "concept": "Canales de pago, depósito en garantía y enrutamiento de ingresos para llamadas de pago.", "industry": "pagos de agentes"},
+    "m9": {"title": "Observabilidad y operación", "concept": "Trazar ejecuciones multiagente para que el comportamiento sea inspeccionable, no magia.", "industry": "OpenTelemetry, trazado"}
+  },
+  "site": {
+    "modules_heading": "9 módulos",
+    "labs_heading": "Laboratorios prácticos",
+    "quickstart_heading": "Inicio rápido",
+    "quickstart_body": "Clona el repositorio, instala las dependencias sandbox para labs de economía y ejecútalos localmente o en Google Colab.<br><br><code class=\"inline\">git clone https://github.com/alexar76/orchestration-course.git<br>cd orchestration-course<br>pip install -e \".[sandbox,dev]\"<br>python labs/lab01_agent_and_tool.py<br>COURSE_LANG=es python labs/lab01_agent_and_tool.py</code>",
+    "open_colab": "Abrir en Colab",
+    "view_source": "Ver código",
+    "run_local": "Ejecución local",
+    "has_lab": "lab",
+    "coming_soon": "solo concepto",
+    "advanced": "avanzado",
+    "module": "Módulo",
+    "footer": "Parte del ecosistema AIMarket — patrones neutros de orquestación con sandbox del SDK real."
+  },
+  "labs": {
+    "lab01": {"desc_translate": "por favor traduce este contrato", "desc_summarize": "resume este largo informe sobre agentes"},
+    "lab03": {"book": "agendar una reunión", "review": "por favor revisa este contrato NDA", "reason": "se requiere experiencia legal"},
+    "lab04": {"invoking": "invocando prod-translate/translate.multi@v2"},
+    "lab08": {"task": "traducir texto a varios idiomas"}
+  }
+}

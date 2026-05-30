@@ -1,0 +1,15 @@
+# Runtime artifacts from the embedded sandbox hub (created by labs/tests)
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# Python
+__pycache__/
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# Generated GitHub Pages output (built in CI)
+site/

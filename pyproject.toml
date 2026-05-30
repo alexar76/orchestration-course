@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=75", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "orchestration-course"
+version = "0.1.0"
+description = "AI Agent Orchestration — hands-on labs with neutral patterns and a real agent economy sandbox"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "AI-Factory" }]
+dependencies = []
+
+[project.urls]
+Homepage = "https://alexar76.github.io/orchestration-course/"
+Documentation = "https://alexar76.github.io/orchestration-course/"
+Repository = "https://github.com/alexar76/orchestration-course"
+Issues = "https://github.com/alexar76/orchestration-course/issues"
+
+[project.optional-dependencies]
+sandbox = [
+    "uvicorn>=0.34",
+    "httpx>=0.28",
+    "aimarket-agent @ git+https://github.com/alexar76/aimarket-agent.git",
+    "aimarket-hub @ git+https://github.com/alexar76/aimarket-hub.git",
+]
+dev = ["pytest>=8"]
+all = ["orchestration-course[sandbox,dev]"]
+
+[tool.setuptools.packages.find]
+include = ["courselib*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

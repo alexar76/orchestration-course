@@ -1,0 +1,63 @@
+{
+  "course": {
+    "title": "Оркестрация ИИ-агентов",
+    "tagline": "Изучи паттерны. Запусти их в настоящей экономике агентов."
+  },
+  "ui": {
+    "task": "задача",
+    "result": "результат",
+    "trace": "трейс",
+    "events": "событий",
+    "handoffs": "передачи управления",
+    "normal": "обычно",
+    "delegate": "делегирование",
+    "hub": "хаб",
+    "discover": "поиск",
+    "invoke": "вызов",
+    "success": "успех",
+    "price": "цена",
+    "served_by": "обработано",
+    "receipt": "чек",
+    "channel": "канал",
+    "total_spent": "потрачено всего",
+    "protocol": "протокол",
+    "steps": "шаги",
+    "acex_listings": "активных листингов ACEX",
+    "sequential": "последовательно",
+    "parallel": "параллельно",
+    "router_es": "роутер (es)",
+    "router_en": "роутер (en)",
+    "none": "(нет)"
+  },
+  "modules": {
+    "m1": {"title": "Цикл агента и инструменты", "concept": "Агент — это политика, которая решает, какой инструмент вызвать.", "industry": "MCP, function calling"},
+    "m2": {"title": "Топологии", "concept": "Последовательность, параллель и маршрутизация — формы мультиагентных потоков.", "industry": "LangGraph, CrewAI"},
+    "m3": {"title": "Передача управления и делегирование", "concept": "Передача задачи агенту-специалисту с защитой от зацикливания.", "industry": "A2A, OpenAI Swarm"},
+    "m4": {"title": "Обнаружение и вызов", "concept": "Поиск и вызов возможностей в федеративном хабе.", "industry": "MCP discovery, A2A cards"},
+    "m5": {"title": "Состояние, память, контекст", "concept": "Проброс контекста между шагами; ведомость работ.", "industry": "паттерны памяти"},
+    "m6": {"title": "Ограждения и безопасность", "concept": "Проверки до и после, останавливающие инъекции и небезопасный вывод.", "industry": "guardrails-фреймворки"},
+    "m7": {"title": "Доверие, верификация, провенанс", "concept": "Подписанные чеки и аттестация делают результат проверяемым.", "industry": "подписи, TEE"},
+    "m8": {"title": "Экономика оркестрации", "concept": "Платёжные каналы, escrow и маршрутизация выручки для платных вызовов.", "industry": "платежи агентов"},
+    "m9": {"title": "Наблюдаемость и эксплуатация", "concept": "Трассировка мультиагентных запусков: поведение видно, а не магия.", "industry": "OpenTelemetry, трассировка"}
+  },
+  "site": {
+    "modules_heading": "9 модулей",
+    "labs_heading": "Практические лабы",
+    "quickstart_heading": "Быстрый старт",
+    "quickstart_body": "Клонируйте репозиторий, установите sandbox-зависимости для экономических лаб и запускайте локально или в Google Colab.<br><br><code class=\"inline\">git clone https://github.com/alexar76/orchestration-course.git<br>cd orchestration-course<br>pip install -e \".[sandbox,dev]\"<br>python labs/lab01_agent_and_tool.py<br>COURSE_LANG=ru python labs/lab01_agent_and_tool.py</code>",
+    "open_colab": "Открыть в Colab",
+    "view_source": "Исходник",
+    "run_local": "Локальный запуск",
+    "has_lab": "лаба",
+    "coming_soon": "только теория",
+    "advanced": "продвинутый",
+    "module": "Модуль",
+    "footer": "Часть экосистемы AIMarket — нейтральные паттерны оркестрации с реальным SDK-песочницей."
+  },
+  "labs": {
+    "lab01": {"desc_translate": "пожалуйста, переведи этот договор", "desc_summarize": "сделай выжимку этого длинного отчёта об агентах"},
+    "lab03": {"book": "назначить встречу", "review": "проверьте, пожалуйста, этот NDA-договор", "reason": "нужна юридическая экспертиза"},
+    "lab04": {"invoking": "вызываю prod-translate/translate.multi@v2"},
+    "lab08": {"task": "перевести текст на несколько языков"}
+  }
+}

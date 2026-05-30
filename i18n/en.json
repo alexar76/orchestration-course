@@ -1,0 +1,63 @@
+{
+  "course": {
+    "title": "AI Agent Orchestration",
+    "tagline": "Learn the patterns. Run them against a real agent economy."
+  },
+  "ui": {
+    "task": "task",
+    "result": "result",
+    "trace": "trace",
+    "events": "events",
+    "handoffs": "handoffs",
+    "normal": "normal",
+    "delegate": "delegate",
+    "hub": "hub",
+    "discover": "discover",
+    "invoke": "invoke",
+    "success": "success",
+    "price": "price",
+    "served_by": "served by",
+    "receipt": "receipt",
+    "channel": "channel",
+    "total_spent": "total spent",
+    "protocol": "protocol",
+    "steps": "steps",
+    "acex_listings": "ACEX listings live",
+    "sequential": "sequential",
+    "parallel": "parallel",
+    "router_es": "router (es)",
+    "router_en": "router (en)",
+    "none": "(none)"
+  },
+  "modules": {
+    "m1": {"title": "Agent loop & tool use", "concept": "An agent is a policy that decides which tool to call.", "industry": "MCP, function calling"},
+    "m2": {"title": "Topologies", "concept": "Sequential, parallel and routing — the shapes of multi-agent flows.", "industry": "LangGraph, CrewAI"},
+    "m3": {"title": "Handoffs & delegation", "concept": "Transferring control to a specialist agent, bounded against loops.", "industry": "A2A, OpenAI Swarm"},
+    "m4": {"title": "Discovery & invocation", "concept": "Finding and calling capabilities across a federated hub.", "industry": "MCP discovery, A2A cards"},
+    "m5": {"title": "State, memory, context", "concept": "Threading context between steps; the bill of materials.", "industry": "memory patterns"},
+    "m6": {"title": "Guardrails & safety", "concept": "Pre/post checks that stop prompt injection and unsafe output.", "industry": "guardrails frameworks"},
+    "m7": {"title": "Trust, verification, provenance", "concept": "Signed receipts and attestation make results verifiable.", "industry": "signatures, TEE"},
+    "m8": {"title": "Economics of orchestration", "concept": "Payment channels, escrow and revenue routing for paid calls.", "industry": "agent payments"},
+    "m9": {"title": "Observability & ops", "concept": "Tracing multi-agent runs so behaviour is inspectable, not magic.", "industry": "OpenTelemetry, tracing"}
+  },
+  "site": {
+    "modules_heading": "9 modules",
+    "labs_heading": "Hands-on labs",
+    "quickstart_heading": "Quick start",
+    "quickstart_body": "Clone the repo, install optional sandbox deps for economy labs, then run any lab locally or open it in Google Colab.<br><br><code class=\"inline\">git clone https://github.com/alexar76/orchestration-course.git<br>cd orchestration-course<br>pip install -e \".[sandbox,dev]\"<br>python labs/lab01_agent_and_tool.py<br>COURSE_LANG=ru python labs/lab01_agent_and_tool.py</code>",
+    "open_colab": "Open in Colab",
+    "view_source": "View source",
+    "run_local": "Local run",
+    "has_lab": "lab",
+    "coming_soon": "concept only",
+    "advanced": "advanced",
+    "module": "Module",
+    "footer": "Part of the AIMarket ecosystem — neutral orchestration patterns with a real SDK sandbox."
+  },
+  "labs": {
+    "lab01": {"desc_translate": "please translate this contract", "desc_summarize": "summarize this long report about agents"},
+    "lab03": {"book": "book a meeting", "review": "please review this NDA contract", "reason": "legal expertise required"},
+    "lab04": {"invoking": "invoking prod-translate/translate.multi@v2"},
+    "lab08": {"task": "translate text to multiple languages"}
+  }
+}
