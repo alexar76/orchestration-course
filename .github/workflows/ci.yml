@@ -27,7 +27,11 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[sandbox,dev]"
+          git clone --depth 1 https://github.com/alexar76/aimarket-hub.git _deps/aimarket-hub
+          git clone --depth 1 https://github.com/alexar76/aimarket-agent.git _deps/aimarket-agent
+          python3 scripts/patch_aimarket_hub.py _deps/aimarket-hub
+          pip install -e _deps/aimarket-agent -e _deps/aimarket-hub
+          pip install -e ".[dev]"
 
       - name: Test (patterns + i18n + embedded economy)
         run: pytest -q
