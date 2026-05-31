@@ -13,12 +13,32 @@
     return typeof node === "string" ? node : key;
   }
 
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function quickstartCommands() {
+    const base = state.data.quickstartCommands || [];
+    const name = t("site.certificate_name_placeholder") || "Your Name";
+    return [...base, `python labs/run_exercises.py --certificate "${name}"`];
+  }
+
   function labForModule(mod) {
     return state.data.labs.find((l) => l.module === mod);
   }
 
   function labStems() {
     return state.data.labs.map((l) => l.stem);
+  }
+
+  function trackPill(track) {
+    if (track === "economy") return `<span class="pill track-economy">${t("site.hub_lite")}</span>`;
+    if (track === "advanced") return `<span class="pill track-advanced">${t("site.advanced")}</span>`;
+    return "";
   }
 
   function renderCertificatePanel() {
@@ -80,6 +100,7 @@
         CourseProgress.setLabDone(el.dataset.lab, el.checked);
         renderCertificatePanel();
         renderLabs();
+        renderModules();
       });
     });
     panel.querySelectorAll("[data-exercise]").forEach((el) => {
@@ -106,7 +127,8 @@
   }
 
   function renderModules() {
-    const grid = document.getElementById("modules");
+    const grid = document.getElementById("modules-grid");
+    if (!grid) return;
     grid.innerHTML = "";
     for (const mod of state.data.modules) {
       const info = (state.data.catalogs[state.lang].modules || {})[mod] || {};
@@ -122,7 +144,7 @@
         const done = CourseProgress.isLabDone(lab.stem);
         pills += `<span class="pill lab">${t("site.has_lab")}</span>`;
         if (done) pills += `<span class="pill done">${t("site.certificate_mark_done")}</span>`;
-        if (lab.track === "advanced") pills += `<span class="pill">${t("site.advanced")}</span>`;
+        pills += trackPill(lab.track);
         actions = `
           <div class="actions">
             <a class="btn primary" href="${lab.colab}" target="_blank" rel="noopener">${t("site.open_colab")}</a>
@@ -133,9 +155,9 @@
         pills += `<span class="pill soon">${t("site.coming_soon")}</span>`;
       }
       card.innerHTML = `
-        <h3>${title}</h3>
-        <div class="meta">${industry}</div>
-        <p>${concept}</p>
+        <h3>${escapeHtml(title)}</h3>
+        <div class="meta">${escapeHtml(industry)}</div>
+        <p>${escapeHtml(concept)}</p>
         ${pills}
         ${actions}`;
       grid.appendChild(card);
@@ -153,6 +175,7 @@
 
   function renderLabs() {
     const list = document.getElementById("labs");
+    if (!list) return;
     list.innerHTML = "";
     for (const lab of state.data.labs) {
       const mod = lab.module.toUpperCase();
@@ -161,9 +184,9 @@
       const item = document.createElement("article");
       item.className = "card";
       item.innerHTML = `
-        <h3>${modInfo.title || lab.stem} ${done ? '<span class="pill done">' + t("site.certificate_mark_done") + "</span>" : ""}</h3>
+        <h3>${escapeHtml(modInfo.title || lab.stem)} ${done ? '<span class="pill done">' + t("site.certificate_mark_done") + "</span>" : ""}</h3>
         <div class="meta">${t("site.module")} ${mod} · ${lab.track}</div>
-        <pre class="lab-doc">${lab.docstring.replace(/</g, "&lt;")}</pre>
+        <pre class="lab-doc">${escapeHtml(lab.docstring)}</pre>
         <div class="actions">
           <a class="btn primary" href="${lab.colab}" target="_blank" rel="noopener">${t("site.open_colab")}</a>
           <a href="https://github.com/${state.data.repo}/blob/main/${lab.script}">${t("site.view_source")}</a>
@@ -183,18 +206,74 @@
     });
   }
 
+  function renderQuickstart() {
+    const panel = document.getElementById("quickstart-panel");
+    if (!panel) return;
+    const cmds = quickstartCommands();
+    const lines = cmds
+      .map((cmd) => `<span class="terminal-line"><span class="prompt">$ </span><span class="cmd">${escapeHtml(cmd)}</span></span>`)
+      .join("");
+    panel.innerHTML = `
+      <p class="quickstart-intro">${t("site.quickstart_intro")}</p>
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="terminal-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="terminal-title">orchestration-course</div>
+          <button type="button" class="terminal-copy" id="quickstart-copy">${t("site.quickstart_copy")}</button>
+        </div>
+        <pre class="terminal-body" id="quickstart-cmds">${lines}</pre>
+      </div>`;
+    const copyBtn = panel.querySelector("#quickstart-copy");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", async () => {
+        const text = cmds.join("\n");
+        try {
+          await navigator.clipboard.writeText(text);
+          const prev = copyBtn.textContent;
+          copyBtn.textContent = t("site.quickstart_copied");
+          setTimeout(() => {
+            copyBtn.textContent = prev;
+          }, 1600);
+        } catch (_err) {
+          /* ignore */
+        }
+      });
+    }
+  }
+
   function renderHero() {
     const c = state.data.catalogs[state.lang].course || {};
+    const stats = state.data.stats || { modules: 9, labs: 8, languages: 3 };
     document.getElementById("title").textContent = c.title || "AI Agent Orchestration";
     document.getElementById("tagline").textContent = c.tagline || "";
     document.getElementById("modules-heading").textContent = t("site.modules_heading");
     document.getElementById("labs-heading").textContent = t("site.labs_heading");
     document.getElementById("quickstart-heading").textContent = t("site.quickstart_heading");
-    document.getElementById("quickstart-body").innerHTML = t("site.quickstart_body");
     document.getElementById("certificate-heading").textContent = t("site.certificate_heading");
+    const badge = document.getElementById("hero-badge");
+    if (badge) badge.textContent = t("site.hero_badge");
     const certNav = document.getElementById("cert-nav");
     if (certNav) certNav.textContent = t("site.certificate_nav");
     document.getElementById("footer-note").textContent = t("site.footer");
+
+    const statsEl = document.getElementById("hero-stats");
+    if (statsEl) {
+      statsEl.innerHTML = `
+        <div class="stat"><strong>${stats.modules}</strong><span>${t("site.stat_modules")}</span></div>
+        <div class="stat"><strong>${stats.labs}</strong><span>${t("site.stat_labs")}</span></div>
+        <div class="stat"><strong>${stats.languages}</strong><span>${t("site.stat_langs")}</span></div>`;
+    }
+
+    const nav = document.getElementById("page-nav");
+    if (nav) {
+      nav.innerHTML = `
+        <li><a href="#quickstart">${t("site.nav_quickstart")}</a></li>
+        <li><a href="#certificate">${t("site.nav_certificate")}</a></li>
+        <li><a href="#modules">${t("site.nav_modules")}</a></li>
+        <li><a href="#labs">${t("site.nav_labs")}</a></li>`;
+    }
+
+    renderQuickstart();
   }
 
   function setLang(lang) {
