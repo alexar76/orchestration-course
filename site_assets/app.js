@@ -44,6 +44,8 @@
   function renderCertificatePanel() {
     const panel = document.getElementById("certificate-panel");
     if (!panel) return;
+    const prevName = document.getElementById("cert-name");
+    const savedName = prevName ? prevName.value : "";
     const sum = CourseProgress.summary(labStems(), EXERCISE_MODS);
     const total = sum.labsTotal + sum.exTotal;
     const done = sum.labsDone + sum.exDone;
@@ -51,7 +53,7 @@
 
     let labRows = "";
     for (const lab of state.data.labs) {
-      const modInfo = state.data.catalogs[state.lang].modules[lab.module] || {};
+      const modInfo = (state.data.catalogs[state.lang]?.modules || {})[lab.module] || {};
       const checked = CourseProgress.isLabDone(lab.stem) ? "checked" : "";
       labRows += `
         <label class="check-row">
@@ -62,7 +64,7 @@
 
     let exRows = "";
     for (const mod of EXERCISE_MODS) {
-      const modInfo = state.data.catalogs[state.lang].modules[mod] || {};
+      const modInfo = (state.data.catalogs[state.lang]?.modules || {})[mod] || {};
       const checked = CourseProgress.isExerciseDone(mod) ? "checked" : "";
       exRows += `
         <label class="check-row">
@@ -112,6 +114,7 @@
 
     const btn = panel.querySelector("#cert-btn");
     const nameInput = panel.querySelector("#cert-name");
+    if (nameInput && savedName) nameInput.value = savedName;
     if (btn) {
       btn.addEventListener("click", async () => {
         const name = (nameInput.value || "").trim();
@@ -174,7 +177,7 @@
   }
 
   function renderLabs() {
-    const list = document.getElementById("labs");
+    const list = document.getElementById("labs-grid");
     if (!list) return;
     list.innerHTML = "";
     for (const lab of state.data.labs) {
@@ -269,39 +272,58 @@
       nav.innerHTML = `
         <li><a href="#quickstart">${t("site.nav_quickstart")}</a></li>
         <li><a href="#certificate">${t("site.nav_certificate")}</a></li>
-        <li><a href="#modules">${t("site.nav_modules")}</a></li>
+        <li><a href="#modules-section">${t("site.nav_modules")}</a></li>
         <li><a href="#labs">${t("site.nav_labs")}</a></li>`;
     }
 
     renderQuickstart();
   }
 
-  function setLang(lang) {
-    state.lang = lang;
-    localStorage.setItem("course-lang", lang);
-    document.documentElement.lang = lang;
-    document.querySelectorAll(".lang-switch button").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.lang === lang);
-    });
+  function renderPage() {
     renderHero();
     renderCertificatePanel();
     renderModules();
     renderLabs();
   }
 
+  function setLang(lang) {
+    if (!state.data || !state.data.catalogs[lang]) return;
+    state.lang = lang;
+    localStorage.setItem("course-lang", lang);
+    document.documentElement.lang = lang;
+    document.querySelectorAll(".lang-switch button").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.lang === lang);
+    });
+    const c = state.data.catalogs[lang].course || {};
+    document.title = c.title ? `${c.title} · AI Agent Orchestration` : "AI Agent Orchestration";
+    renderPage();
+  }
+
+  function initLangSwitcher() {
+    const switcher = document.getElementById("lang-switch");
+    if (!switcher || switcher.dataset.bound === "1") return;
+    switcher.dataset.bound = "1";
+    switcher.addEventListener("click", (event) => {
+      const btn = event.target.closest("button[data-lang]");
+      if (!btn || !switcher.contains(btn)) return;
+      setLang(btn.dataset.lang);
+    });
+    for (const lang of state.data.languages) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.dataset.lang = lang;
+      btn.textContent = lang.toUpperCase();
+      switcher.appendChild(btn);
+    }
+  }
+
   fetch("data/course.json")
     .then((r) => r.json())
     .then((data) => {
       state.data = data;
-      const switcher = document.getElementById("lang-switch");
-      for (const lang of data.languages) {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.dataset.lang = lang;
-        btn.textContent = lang.toUpperCase();
-        btn.addEventListener("click", () => setLang(lang));
-        switcher.appendChild(btn);
-      }
-      setLang(localStorage.getItem("course-lang") || "en");
+      initLangSwitcher();
+      const saved = localStorage.getItem("course-lang");
+      const initial = saved && data.catalogs[saved] ? saved : "en";
+      setLang(initial);
     });
 })();

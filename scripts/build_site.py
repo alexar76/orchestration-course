@@ -484,9 +484,9 @@ def _write_assets() -> None:
     (SITE / "assets" / "style.css").write_text(css, encoding="utf-8")
 
 
-def _write_index() -> None:
+def _write_index(*, asset_version: str) -> None:
     html = textwrap.dedent(
-        """\
+        f"""\
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -497,7 +497,7 @@ def _write_index() -> None:
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
           <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
-          <link rel="stylesheet" href="assets/style.css" />
+          <link rel="stylesheet" href="assets/style.css?v={asset_version}" />
         </head>
         <body>
           <div class="wrap">
@@ -529,23 +529,23 @@ def _write_index() -> None:
               <div class="card" id="certificate-panel"></div>
             </section>
 
-            <section id="modules">
+            <section id="modules-section">
               <div class="section-head"><h2 id="modules-heading"></h2></div>
               <div class="grid" id="modules-grid"></div>
             </section>
 
             <section id="labs">
               <div class="section-head"><h2 id="labs-heading"></h2></div>
-              <div class="grid" id="labs"></div>
+              <div class="grid" id="labs-grid"></div>
             </section>
 
             <footer>
               <p id="footer-note"></p>
             </footer>
           </div>
-          <script src="assets/progress.js"></script>
-          <script src="assets/certificate.js"></script>
-          <script src="assets/app.js"></script>
+          <script src="assets/progress.js?v={asset_version}"></script>
+          <script src="assets/certificate.js?v={asset_version}"></script>
+          <script src="assets/app.js?v={asset_version}"></script>
         </body>
         </html>
         """
@@ -554,6 +554,8 @@ def _write_index() -> None:
 
 
 def main() -> None:
+    import hashlib
+
     catalogs = _load_catalogs()
     payload = _build_payload(catalogs)
     (SITE / "data").mkdir(parents=True, exist_ok=True)
@@ -561,7 +563,10 @@ def main() -> None:
         json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     _write_assets()
-    _write_index()
+    asset_version = hashlib.sha256(
+        b"".join((SITE_ASSETS / name).read_bytes() for name in ("app.js", "progress.js", "certificate.js"))
+    ).hexdigest()[:10]
+    _write_index(asset_version=asset_version)
     print(f"Wrote {SITE}/")
 
 
