@@ -7,6 +7,16 @@
 
 # AI Agent Orchestration
 
+<!-- aicom-readme-badges -->
+<p align="center">
+  <a href="https://github.com/alexar76/orchestration-course/actions/workflows/ci.yml"><img src="https://github.com/alexar76/orchestration-course/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="#testing--coverage"><img src="docs/badges/coverage.svg" alt="Test coverage" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+</p><!-- /aicom-readme-badges -->
+
+
+
+
 **Learn the patterns. Run them against a real agent economy.**
 
 Interactive Python course: 9 modules (M1–M9), runnable labs, full **EN / RU / ES** localization.
