@@ -12,7 +12,9 @@
   <a href="https://github.com/alexar76/orchestration-course/actions/workflows/ci.yml"><img src="https://github.com/alexar76/orchestration-course/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
   <a href="#testing--coverage"><img src="docs/badges/coverage.svg" alt="Test coverage" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
-</p><!-- /aicom-readme-badges -->
+</p>
+<!-- /aicom-readme-badges -->
+
 
 
 
