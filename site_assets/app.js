@@ -1,5 +1,5 @@
 (function () {
-  const EXERCISE_MODS = ["m1", "m2", "m3", "m5", "m6", "m7"];
+  const EXERCISE_MODS = ["m1", "m2", "m3", "m4", "m5", "m6", "m7"];
   const state = { lang: "en", data: null };
 
   function t(key) {
