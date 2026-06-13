@@ -27,7 +27,7 @@ hub-lite = [
 sandbox = [
     "uvicorn>=0.34",
     "httpx>=0.28",
-    "aimarket-agent @ git+https://github.com/alexar76/aimarket-agent.git",
+    "aimarket-agent>=2.1.0",
     "aimarket-hub @ git+https://github.com/alexar76/aimarket-hub.git",
 ]
 dev = ["pytest>=8"]
